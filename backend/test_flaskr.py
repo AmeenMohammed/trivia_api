@@ -28,11 +28,24 @@ class TriviaTestCase(unittest.TestCase):
     def tearDown(self):
         """Executed after reach test"""
         pass
+    #test get questions success and fail
+    def test_get_questions(self):
+        res = self.client().get('/questions')
+        data = json.loads(res.data)
 
-    """
-    TODO
-    Write at least one test for each test for successful operation and for expected errors.
-    """
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(data['total_questions'])
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(len(data['categories']))
+
+    def test_unavailable_page_number_for_questions(self):
+        res = self.client().get('/questions?page=200')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resource not found')
 
 
 # Make the tests conveniently executable
