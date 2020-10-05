@@ -65,6 +65,36 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resource not found')
 
+    #test fail and success of adding a question    
+    def test_add_question(self):
+        new_question = {
+            'question': 'Hello',
+            'answer': 'Hi',
+            'difficulty': 3,
+            'category': 2
+        }
+        total_questions_before = len(Question.query.all())
+        res = self.client().post('/questions', json=new_question)
+        data = json.loads(res.data)
+        total_questions_after = len(Question.query.all())
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertEqual(total_questions_after, total_questions_before + 1)
+
+    def test_add_question_with_invalid_data(self):
+        new_question = {
+            'question': 'Hello',
+            'answer': 'Hi',
+            'category': 2
+        }
+        res = self.client().post('/questions', json=new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "unprocessable")    
+
     #test fail and success of deleting a question
     def test_delete_question(self):
         question = Question(question='Hello', answer='Hi',
