@@ -80,13 +80,13 @@ def create_app(test_config=None):
   def new_question():
     data = request.get_json()
     
-    question = data['question']
-    answer = data['answer']
-    difficulty = data['difficulty']
-    category = data['category']
+    question = data.get('question', '')
+    answer = data.get('answer', '')
+    difficulty = data.get('difficulty', '')
+    category = data.get('category','')
     
     if (question == "" or answer == "" or difficulty == "" or category == ""):
-      abort(404)
+      abort(422)
 
     try:
       question = Question(question=question, answer=answer,
