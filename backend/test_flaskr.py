@@ -141,7 +141,26 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 422)
         self.assertEqual(data["success"], False)
-        self.assertEqual(data["message"], "unprocessable")    
+        self.assertEqual(data["message"], "unprocessable")
+
+    #test fail and success of getting questions categories
+    def test_get_questions_per_category(self):
+        res = self.client().get('/categories/3/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['total_questions'])
+        self.assertTrue(data['current_category'])
+
+    def test_not_found_questions_for_unavailabe_category(self):
+        res = self.client().get('/categories/90000/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "resource not found") 
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
