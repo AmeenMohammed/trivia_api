@@ -66,27 +66,196 @@ One note before you delve into your tasks: for each endpoint you are expected to
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
-REVIEW_COMMENT
+GET \categories Fetches a dictionary of all available categories
+
+- Example: `curl http://127.0.0.1:5000/categories`
 ```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
+{
+    "categories": {
+        "1": "Science", 
+        "2": "Art", 
+        "3": "Geography", 
+        "4": "History", 
+        "5": "Entertainment", 
+        "6": "Sports"
+    }, 
+    "success": true
+}
+```
+GET \questions?page=<page_number> Fetches a paginated dictionary of questions of all available categories
 
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
+- Example: `curl http://127.0.0.1:5000/questions`
+```
+{
+    "categories": {
+        "1": "Science",
+        "2": "Art",
+        "3": "Geography",
+        "4": "History",
+        "5": "Entertainment",
+        "6": "Sports"
+    },
+    "current_category": null,
+    "questions": [
+        {
+            "answer": "Maya Angelou",
+            "category": 4,
+            "difficulty": 2,
+            "id": 5,
+            "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+        },
+        {
+            "answer": "Muhammad Ali",
+            "category": 4,
+            "difficulty": 1,
+            "id": 9,
+            "question": "What boxer's original name is Cassius Clay?"
+        },
+        {
+            "answer": "Apollo 13",
+            "category": 5,
+            "difficulty": 4,
+            "id": 2,
+            "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        },
+        {
+            "answer": "Tom Cruise",
+            "category": 5,
+            "difficulty": 4,
+            "id": 4,
+            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+        },
+        {
+            "answer": "Edward Scissorhands",
+            "category": 5,
+            "difficulty": 3,
+            "id": 6,
+            "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+        },
+        {
+            "answer": "Brazil",
+            "category": 6,
+            "difficulty": 3,
+            "id": 10,
+            "question": "Which is the only team to play in every soccer World Cup tournament?"
+        },
+        {
+            "answer": "Uruguay",
+            "category": 6,
+            "difficulty": 4,
+            "id": 11,
+            "question": "Which country won the first ever soccer World Cup in 1930?"
+        },
+        {
+            "answer": "Lake Victoria",
+            "category": 3,
+            "difficulty": 2,
+            "id": 13,
+            "question": "What is the largest lake in Africa?"
+        },
+        {
+            "answer": "The Palace of Versailles",
+            "category": 3,
+            "difficulty": 3,
+            "id": 14,
+            "question": "In which royal palace would you find the Hall of Mirrors?"
+        },
+        {
+            "answer": "Agra",
+            "category": 3,
+            "difficulty": 2,
+            "id": 15,
+            "question": "The Taj Mahal is located in which Indian city?"
+        }
+    ],
+    "success": true,
+    "total_questions": 20
+}
+```
+DELETE /questions/<question_id> Delete an existing questions from the repository of available questions
 
-GET '/categories'
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
-- Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Example: `curl -X DELETE http://127.0.0.1:5000/questions/2`
+```
+{
+    "deleted": "2", 
+    "success": true
+}
+```
+POST /questions Add a new question to the repository of available questions
 
+- Example: `curl -H "Content-Type: application/json" -X POST -d'{"question":"Hello?","answer":"Hi","difficulty":"2","category":"2"}' http://127.0.0.1:5000/questions (bash)`
+```
+{
+    "created": 26, 
+    "success": true
+}
+```
+POST /questions/search Fetches all questions where a substring matches the search term (not case-sensitive)
+- Example: `curl -H "Content-Type: application/json" -X POST -d'{"searchTerm":"Hello"}' http://127.0.0.1:5000/questions/search` 
+```
+{
+    "current_category": null,
+    "questions": [
+        {
+            "answer": "Hi",
+            "category": 2,
+            "difficulty": 2,
+            "id": 26,
+            "question": "Hello?"
+        }
+    ],
+    "success": true,
+    "total_questions": 1
+}
+```
+GET /categories/<int:category_id>/questions Fetches a dictionary of questions for the specified category
+- Example: `curl http://127.0.0.1:5000/categories/1/questions` 
+```
+    {
+        "current_category": 1,
+        "questions": [
+            {
+                "answer": "The Liver",
+                "category": 1,
+                "difficulty": 4,
+                "id": 20,
+                "question": "What is the heaviest organ in the human body?"
+            },
+            {
+                "answer": "Alexander Fleming",
+                "category": 1,
+                "difficulty": 3,
+                "id": 21,
+                "question": "Who discovered penicillin?"
+            },
+            {
+                "answer": "Blood",
+                "category": 1,
+                "difficulty": 4,
+                "id": 22,
+                "question": "Hematology is a branch of medicine involving the study of what?"
+            }
+        ],
+        "success": true,
+        "total_questions": 3
+    }
+```
+
+POST /quizzes Fetches one random question within a specified category. Previously asked questions are not asked again.
+
+- Example: `curl -H "Content-Type: application/json" -X POST -d '{"previous_questions":["1","2"],"quiz_category":{"type":"click","id":"0"}}' http://127.0.0.1:5000/quizzes` 
+
+```
+    {
+        "question": {
+            "answer": "The Palace of Versailles",
+            "category": 3,
+            "difficulty": 3,
+            "id": 14,
+            "question": "In which royal palace would you find the Hall of Mirrors?"
+        },
+        "success": true
+    }
 ```
 
 
